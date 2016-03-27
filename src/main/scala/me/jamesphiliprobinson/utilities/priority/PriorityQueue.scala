@@ -9,7 +9,10 @@ trait PriorityQueue[T] {
   def addAll(seq: Seq[T], priority: Int)
   def next() : T
   def next(items: Int) : Seq[T]
+  def next(leave: T => Boolean) : T
+  def next(items: Int, leave: T => Boolean) : Seq[T]
   def remove(t: T)
   def removeAll(seq: Seq[T])
+  def size(): Int
 
 }

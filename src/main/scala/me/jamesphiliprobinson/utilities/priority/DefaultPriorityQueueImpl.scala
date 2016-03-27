@@ -29,4 +29,15 @@ class DefaultPriorityQueueImpl[T] extends PriorityQueue[T] {
     throw new NotImplementedError
   }
 
+  override def next(leave: (T) => Boolean): T = {
+    throw new NotImplementedError
+  }
+
+  override def next(items: Int, leave: (T) => Boolean): Seq[T] = {
+    throw new NotImplementedError
+  }
+
+  override def size(): Int = {
+    throw new NotImplementedError
+  }
 }
