@@ -40,7 +40,7 @@ class DefaultRepeatingPriorityQueueImplSpec extends FunSuite with Matchers {
     queue.size shouldBe 2
   }
 
-  test("can add three entities with different priorities and with on filter get a list ten long") {
+  test("Can add three entities with different priorities and with on filter get a list ten long") {
     val queue = new DefaultRepeatingPriorityQueueImpl[String]
     queue add ("a", 5)
     queue add ("b", 3)
@@ -57,5 +57,80 @@ class DefaultRepeatingPriorityQueueImplSpec extends FunSuite with Matchers {
     list(9) shouldBe "c"
     queue.size shouldBe 3
   }
+
+  test("Can add four entities with different with some clashing increment") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add ("a", 5)
+    queue add ("b", 3)
+    queue add ("d", 3)
+    queue add ("c", 2)
+    queue.size shouldBe 4
+    val list = queue.next(13, _ => true).toArray
+    list.size shouldBe 13
+    List(list(0), list(1), list(2), list(3)) should contain allOf ("a", "b", "c", "d")
+    list(4) shouldBe "c"
+    List(list(5), list(6)) should contain allOf ("b", "d")
+    list(7) shouldBe "c"
+    list(8) shouldBe "a"
+    List(list(9), list(10), list(11)) should contain allOf ("b", "c", "d")
+    list(12) shouldBe "c"
+  }
+
+  test("Can add four entities with different sometimes clashing increments with filter off and then requesting more elements than can be returned") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add ("a", 5)
+    queue add ("b", 3)
+    queue add ("d", 3)
+    queue add ("c", 2)
+    queue.size shouldBe 4
+    val list = queue next 10
+    list.size shouldBe 4
+    list should contain allOf ("a", "b", "c", "d")
+    queue.size shouldBe 0
+  }
+
+  test("Can add four entities with different sometimes clashing increments with changing filter") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add ("a", 5)
+    queue add ("b", 3)
+    queue add ("d", 3)
+    queue add ("c", 2)
+    queue.size shouldBe 4
+    val list = queue next(10, _ == "b")
+    list.size shouldBe 10
+    list.slice(0, 4) should contain allOf ("a", "b", "c", "d")
+    list.slice(5, 10) should contain only ("b")
+    queue.size shouldBe 1
+  }
+
+  test("Can add four entities with different sometimes clashing increments with filter off and then requesting more elements than can be returned using addAll") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add ("a", 5)
+    queue addAll ("b" :: "d" :: Nil, 3)
+    queue add ("c", 2)
+    queue.size shouldBe 4
+    val list = queue next 10
+    list.size shouldBe 4
+    list should contain allOf ("a", "b", "c", "d")
+    queue.size shouldBe 0
+  }
+
+  test("Can add four entities with different with some clashing increment using addAll") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add ("a", 5)
+    queue addAll ("b" :: "d" :: Nil, 3)
+    queue add ("c", 2)
+    queue.size shouldBe 4
+    val list = queue.next(13, _ => true).toArray
+    list.size shouldBe 13
+    List(list(0), list(1), list(2), list(3)) should contain allOf ("a", "b", "c", "d")
+    list(4) shouldBe "c"
+    List(list(5), list(6)) should contain allOf ("b", "d")
+    list(7) shouldBe "c"
+    list(8) shouldBe "a"
+    List(list(9), list(10), list(11)) should contain allOf ("b", "c", "d")
+    list(12) shouldBe "c"
+  }
+
 
 }

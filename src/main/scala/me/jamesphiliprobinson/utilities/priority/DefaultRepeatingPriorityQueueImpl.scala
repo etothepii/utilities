@@ -1,6 +1,7 @@
 package me.jamesphiliprobinson.utilities.priority
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 /**
   * Created by James Robinson on 27/03/2016.
@@ -20,19 +21,13 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
   }
 
   override def next(items: Int): Seq[T] = {
-    throw new NotImplementedError
-  }
-
-  override def removeAll(seq: Seq[T]) = {
-    throw new NotImplementedError
-  }
-
-  override def remove(t: T) = {
-    throw new NotImplementedError
+    next(items, _ => false)
   }
 
   override def addAll(seq: Seq[T], priority: Int) = {
-    throw new NotImplementedError
+    for (t <- seq) {
+      add(t, priority)
+    }
   }
 
   override def next(leave: (T) => Boolean): T = {
@@ -44,7 +39,13 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
   }
 
   override def next(items: Int, leave: (T) => Boolean): Seq[T] = {
-    (1 to items).map(_ => next(leave))
+    var index = 0
+    val listBuffer = ListBuffer.empty[T]
+    while (index < items && !queue.isEmpty) {
+      index = index + 1
+      listBuffer += next(leave)
+    }
+    listBuffer
   }
 
   override def size(): Int = {
