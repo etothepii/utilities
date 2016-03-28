@@ -38,9 +38,9 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
   override def next(leave: (T) => Boolean): T = {
     val queueItem = queue.dequeue
     if (leave(queueItem.item)) {
-      queue.enqueue()
+      queue.enqueue(queueItem.next)
     }
-    throw new NotImplementedError
+    queueItem.item
   }
 
   override def next(items: Int, leave: (T) => Boolean): Seq[T] = {
