@@ -16,7 +16,7 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
   }
 
   override def next(): T = {
-    queue.dequeue.item
+    next(_ => false)
   }
 
   override def next(items: Int): Seq[T] = {
