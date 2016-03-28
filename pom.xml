@@ -26,13 +26,12 @@
         <version>3.2.0</version>
         <executions>
           <execution>
-            <!-- this is so we don't end with a compile error in maven-compiler-plugin -->
             <phase>process-sources</phase>
             <goals>
               <goal>compile</goal>
               <goal>testCompile</goal>
             </goals>
-            <configuration></configuration>
+            <configuration/>
           </execution>
         </executions>
       </plugin>
@@ -44,6 +43,32 @@
           <source>${java.version}</source>
           <target>${java.version}</target>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.scalatest</groupId>
+        <artifactId>scalatest-maven-plugin</artifactId>
+        <version>1.0</version>
+        <configuration>
+          <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+          <junitxml>.</junitxml>
+          <filereports>WDF TestSuite.txt</filereports>
+        </configuration>
+        <executions>
+          <execution>
+            <id>test</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
