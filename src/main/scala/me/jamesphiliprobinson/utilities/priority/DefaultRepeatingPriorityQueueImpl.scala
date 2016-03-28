@@ -1,16 +1,22 @@
 package me.jamesphiliprobinson.utilities.priority
 
+import scala.collection.mutable
+
 /**
   * Created by James Robinson on 27/03/2016.
   */
-class DefaultPriorityQueueImpl[T] extends PriorityQueue[T] {
+class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
 
-  override def add(t: T, priority: Int) = {
-    throw new NotImplementedError
+  val queue = new mutable.PriorityQueue[RepeatingPriorityQueueItem[T]]
+
+  override def add(t: T, priority: Int) = add(t, priority, 0)
+
+  def add(t: T, priority: Int, score: Int) = {
+    queue enqueue(new RepeatingPriorityQueueItem[T](t, priority, score))
   }
 
   override def next(): T = {
-    throw new NotImplementedError
+    queue.dequeue.item
   }
 
   override def next(items: Int): Seq[T] = {
@@ -30,6 +36,10 @@ class DefaultPriorityQueueImpl[T] extends PriorityQueue[T] {
   }
 
   override def next(leave: (T) => Boolean): T = {
+    val queueItem = queue.dequeue
+    if (leave(queueItem.item)) {
+      queue.enqueue()
+    }
     throw new NotImplementedError
   }
 
@@ -38,6 +48,6 @@ class DefaultPriorityQueueImpl[T] extends PriorityQueue[T] {
   }
 
   override def size(): Int = {
-    throw new NotImplementedError
+    queue.size
   }
 }

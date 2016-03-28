@@ -3,7 +3,7 @@ package me.jamesphiliprobinson.utilities.priority
 /**
   * Created by James Robinson on 27/03/2016.
   */
-trait PriorityQueue[T] {
+trait RepeatingPriorityQueue[T] {
 
   def add(t: T, priority: Int)
   def addAll(seq: Seq[T], priority: Int)
