@@ -44,7 +44,7 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
   }
 
   override def next(items: Int, leave: (T) => Boolean): Seq[T] = {
-    throw new NotImplementedError
+    (1 to items).map(_ => next(leave))
   }
 
   override def size(): Int = {
