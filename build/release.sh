@@ -2,7 +2,7 @@
 branch_name=$(git symbolic-ref HEAD 2>/dev/null | sed "s/^[^\/]*\/[^\/]*\///")
 if [[ $branch_name == release/* ]]; then
   major_version=$(echo $branch_name | sed "s/release.//")
-  minor_version=$(git tag | grep "v"$major_version | wc -l)
+  minor_version=$(git tag | grep "v"$major_version | wc -l | tr -d '[[:space:]]')
   version=$major_version.$minor_version
   mvn versions:set -DnewVersion=$version 
   mvn clean install
