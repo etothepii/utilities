@@ -132,5 +132,15 @@ class DefaultRepeatingPriorityQueueImplSpec extends FunSuite with Matchers {
     list(12) shouldBe "c"
   }
 
+  test("Once items have been taken but filtered back in new items should have the priority of old items") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add ("a", 2)
+    queue next (10, _ => true)
+    queue add ("b", 3)
+    queue.next(_ => true) shouldBe "b"
+    queue.next(_ => true) shouldBe "a"
+    queue.next(_ => true) shouldBe "b"
+    queue.next(_ => true) shouldBe "a"
+  }
 
 }

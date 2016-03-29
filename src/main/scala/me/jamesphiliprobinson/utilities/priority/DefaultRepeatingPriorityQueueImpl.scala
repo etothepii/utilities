@@ -9,10 +9,11 @@ import scala.collection.mutable.ListBuffer
 class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
 
   val queue = new mutable.PriorityQueue[RepeatingPriorityQueueItem[T]]
+  var maxScore = 0L
 
-  override def add(t: T, priority: Int) = add(t, priority, 0)
+  override def add(t: T, priority: Int) = add(t, priority, maxScore)
 
-  def add(t: T, priority: Int, score: Int) = {
+  def add(t: T, priority: Int, score: Long) = {
     queue enqueue(new RepeatingPriorityQueueItem[T](t, priority, score))
   }
 
@@ -32,6 +33,7 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
 
   override def next(leave: (T) => Boolean): T = {
     val queueItem = queue.dequeue
+    maxScore = queueItem.score
     if (leave(queueItem.item)) {
       queue.enqueue(queueItem.next)
     }
