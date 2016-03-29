@@ -7,8 +7,9 @@ if [[ $branch_name == release/* ]]; then
   mvn versions:set -DnewVersion=$version 
   mvn clean install
   if [ $? -eq 0 ]; then
+    version=v$version
     git checkout -b tag_$version
-    git commit "Updated version numbers for $version"
+    git commit -a -m "Updated version numbers for $version"
     git tag $version
     git push origin $version
     git checkout $branch_name
