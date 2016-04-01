@@ -143,4 +143,17 @@ class DefaultRepeatingPriorityQueueImplSpec extends FunSuite with Matchers {
     queue.next(_ => true) shouldBe "a"
   }
 
+  test("If an item is added for a second time the priority should just change") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add ("a", 3)
+    queue add ("a", 2)
+    queue add ("b", 2)
+    queue next(2, _ => true) should contain allOf ("a", "b")
+    queue next(2, _ => true) should contain allOf ("a", "b")
+    queue next(2, _ => true) should contain allOf ("a", "b")
+    queue next(2, _ => true) should contain allOf ("a", "b")
+    queue next(2, _ => true) should contain allOf ("a", "b")
+    queue next(2, _ => true) should contain allOf ("a", "b")
+  }
+
 }
