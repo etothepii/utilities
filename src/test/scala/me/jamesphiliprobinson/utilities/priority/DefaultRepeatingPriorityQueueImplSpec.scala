@@ -156,4 +156,28 @@ class DefaultRepeatingPriorityQueueImplSpec extends FunSuite with Matchers {
     queue next(2, _ => true) should contain allOf ("a", "b")
   }
 
+  test ("If add long dated item and then readd should not rush to the top of the queue") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add ("a", 100)
+    queue add ("b", 2)
+    queue next (2, _ => true) should contain allOf ("a", "b")
+    queue next (49, _ => true) should contain only ("b")
+    queue next (2, _ => true) should contain allOf ("a", "b")
+    queue next (24, _ => true) should contain only ("b")
+    queue add ("a", 100)
+    queue next (25, _ => true) should contain only ("b")
+    queue next (2, _ => true) should contain allOf ("a", "b")
+    queue next (24, _ => true) should contain only ("b")
+    queue add ("a", 80)
+    queue next (15, _ => true) should contain only ("b")
+    queue next (2, _ => true) should contain allOf ("a", "b")
+    queue next (24, _ => true) should contain only ("b")
+    queue add ("a", 120)
+    queue next (35, _ => true) should contain only ("b")
+    queue next (2, _ => true) should contain allOf ("a", "b")
+    queue next (24, _ => true) should contain only ("b")
+    queue add ("a", 10)
+    queue next (2, _ => true) should contain allOf ("a", "b")
+  }
+
 }

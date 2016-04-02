@@ -16,5 +16,7 @@ case class RepeatingPriorityQueueItem[T](val item: T, val increment: Int, val sc
     }
   }
 
-  def next = new RepeatingPriorityQueueItem[T](item, increment, score + increment)
+  def nextScore = score + increment
+
+  def previousScore = score - increment
 }

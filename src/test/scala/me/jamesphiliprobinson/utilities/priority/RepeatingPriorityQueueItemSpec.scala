@@ -25,12 +25,14 @@ class RepeatingPriorityQueueItemSpec extends FunSuite with Matchers {
     a compare b shouldBe 0
   }
 
-  test("Can correctly increment to next item") {
+  test("Can correctly increment to nextScore§") {
     val a = new RepeatingPriorityQueueItem[String]("a", 7, 5)
-    val b = a.next
-    b.item shouldBe "a"
-    b.increment shouldBe 7
-    b.score shouldBe 12
+    a.nextScore shouldBe 12
+  }
+
+  test("Can correctly decrement to nextScore") {
+    val a = new RepeatingPriorityQueueItem[String]("a", 7, 5)
+    a.previousScore shouldBe -2
   }
 
 }

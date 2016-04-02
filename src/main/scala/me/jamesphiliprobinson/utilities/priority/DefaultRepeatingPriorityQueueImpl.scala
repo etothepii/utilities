@@ -14,17 +14,18 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
 
   override def add(t: T, priority: Int) = add(t, priority, maxScore)
 
-  private def add(rpqi: RepeatingPriorityQueueItem[T]) = {
-    val oldItem = map remove rpqi.item
-    if (oldItem.isDefined) {
+  def add(item: T, increment: Int, score: Long) = {
+    val oldItem = map remove item
+    val newScore = if (oldItem.isDefined) {
       oldItem.get.active = false
+      Math.max(maxScore, oldItem.get.previousScore + increment)
     }
-    map += ((rpqi.item, rpqi))
+    else {
+      score
+    }
+    val rpqi = new RepeatingPriorityQueueItem[T](item, increment, newScore)
+    map += ((item, rpqi))
     queue enqueue(rpqi)
-  }
-
-  def add(t: T, priority: Int, score: Long): Unit = {
-    add(new RepeatingPriorityQueueItem[T](t, priority, score))
   }
 
   override def next(): T = {
@@ -49,7 +50,7 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
     maxScore = queueItem.score
     map remove queueItem.item
     if (leave(queueItem.item)) {
-      add(queueItem.next)
+      add(queueItem.item, queueItem.increment, queueItem.nextScore)
     }
     queueItem.item
   }
