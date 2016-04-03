@@ -5,8 +5,6 @@ package me.jamesphiliprobinson.utilities.time
   */
 trait SleepTimer {
 
-  def setSleepLength(sleepLength: Long)
-  def setMinimumSleepLength(minimumSleepLength: Long)
   def sleep
   def reset
 
