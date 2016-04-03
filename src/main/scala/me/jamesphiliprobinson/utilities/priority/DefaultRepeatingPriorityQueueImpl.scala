@@ -9,12 +9,23 @@ import scala.collection.mutable.ListBuffer
 class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
 
   val queue = new mutable.PriorityQueue[RepeatingPriorityQueueItem[T]]
+  val map = new mutable.HashMap[T, RepeatingPriorityQueueItem[T]]
   var maxScore = 0L
 
   override def add(t: T, priority: Int) = add(t, priority, maxScore)
 
-  def add(t: T, priority: Int, score: Long) = {
-    queue enqueue(new RepeatingPriorityQueueItem[T](t, priority, score))
+  def add(item: T, increment: Int, score: Long) = {
+    val oldItem = map remove item
+    val newScore = if (oldItem.isDefined) {
+      oldItem.get.active = false
+      Math.max(maxScore, oldItem.get.previousScore + increment)
+    }
+    else {
+      score
+    }
+    val rpqi = new RepeatingPriorityQueueItem[T](item, increment, newScore)
+    map += ((item, rpqi))
+    queue enqueue(rpqi)
   }
 
   override def next(): T = {
@@ -32,10 +43,14 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
   }
 
   override def next(leave: (T) => Boolean): T = {
-    val queueItem = queue.dequeue
+    var queueItem = queue.dequeue
+    while (!queueItem.active) {
+      queueItem = queue.dequeue
+    }
     maxScore = queueItem.score
+    map remove queueItem.item
     if (leave(queueItem.item)) {
-      queue.enqueue(queueItem.next)
+      add(queueItem.item, queueItem.increment, queueItem.nextScore)
     }
     queueItem.item
   }
