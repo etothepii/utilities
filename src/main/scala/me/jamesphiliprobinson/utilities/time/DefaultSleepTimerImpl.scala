@@ -8,13 +8,21 @@ class DefaultSleepTimerImpl(var sleepLength: Long, var minimumSleepLength: Long)
   var time = System.currentTimeMillis
 
   override def sleep = {
-    val sleepFor = time + sleepLength - System.currentTimeMillis
-    Thread sleep Math.max(minimumSleepLength, sleepFor)
-    reset
+    try {
+      sleepWithInterruptedException
+    }
+    catch {
+      case ie: InterruptedException => reset
+    }
   }
 
   override def reset = {
     time = System.currentTimeMillis
   }
 
+  override def sleepWithInterruptedException = {
+    val sleepFor = time + sleepLength - System.currentTimeMillis
+    Thread sleep Math.max(minimumSleepLength, sleepFor)
+    reset
+  }
 }

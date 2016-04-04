@@ -62,4 +62,34 @@ class DefaultSleepTimerSpecImpl extends FunSuite with Matchers {
     timePassed should be < 110L
   }
 
+  test("Can sleep without interrupted exception") {
+    val timer = new DefaultSleepTimerImpl(100, 50)
+    val thread = Thread.currentThread
+    val time = System.currentTimeMillis
+    new Thread(new Runnable {
+      override def run = {
+        Thread sleep 30L
+        thread.interrupt
+      }
+    }).start
+    timer.sleep
+    val taken = System.currentTimeMillis - time
+    taken should be >= 30L
+    taken should be < 40L
+  }
+
+  test("Can sleep with interrupted exception") {
+    val timer = new DefaultSleepTimerImpl(100, 50)
+    val thread = Thread.currentThread
+    new Thread(new Runnable {
+      override def run = {
+        Thread sleep 30L
+        thread.interrupt
+      }
+    }).start
+    intercept[InterruptedException] {
+      timer.sleepWithInterruptedException
+    }
+  }
+
 }

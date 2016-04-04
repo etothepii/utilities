@@ -6,6 +6,7 @@ package me.jamesphiliprobinson.utilities.time
 trait SleepTimer {
 
   def sleep
+  def sleepWithInterruptedException
   def reset
 
 }
