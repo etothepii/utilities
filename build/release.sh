@@ -12,7 +12,7 @@ if [[ $branch_name == release/* ]]; then
     git commit -a -m "Updated version numbers for $version"
     git tag $version
     git push origin $version
-    mvn deploy -Dmaven.test.skip=true
+    mvn deploy -DskipTests=true
     git checkout $branch_name
     git branch -D tag_$version
   else
