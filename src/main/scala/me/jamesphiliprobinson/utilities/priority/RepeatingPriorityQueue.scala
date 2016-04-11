@@ -12,5 +12,6 @@ trait RepeatingPriorityQueue[T] {
   def next(leave: T => Boolean) : T
   def next(items: Int, leave: T => Boolean) : Seq[T]
   def size(): Int
+  def remove(t: T)
 
 }

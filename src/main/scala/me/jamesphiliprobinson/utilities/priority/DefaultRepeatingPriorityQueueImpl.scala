@@ -68,4 +68,11 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
   override def size(): Int = {
     queue.size
   }
+
+  override def remove(t: T) = {
+    val item = map remove t
+    if (item.isDefined) {
+      item.get.active = false
+    }
+  }
 }
