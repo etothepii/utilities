@@ -180,4 +180,17 @@ class DefaultRepeatingPriorityQueueImplSpec extends FunSuite with Matchers {
     queue next (2, _ => true) should contain allOf ("a", "b")
   }
 
+  test ("Can remove items") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add ("a", 2)
+    queue add ("b", 2)
+    queue next(2, _ => true) should contain allOf ("a", "b")
+    queue next(2, _ => true) should contain allOf ("a", "b")
+    queue next(2, _ => true) should contain allOf ("a", "b")
+    queue next(2, _ => true) should contain allOf ("a", "b")
+    queue next(2, _ => true) should contain allOf ("a", "b")
+    queue next(2, _ => true) should contain allOf ("a", "b")
+    queue remove ("a")
+    queue next(20, _ => true) should contain only ("b")
+  }
 }
