@@ -8,7 +8,7 @@ class ManualSleepTimerImpl extends SleepTimer {
   private var shouldSleep = false
   private var autoActivate = false
 
-  override def sleep = {
+  override def sleepWithInterruptedException = {
     if (isShouldSleep) {
       sync.synchronized {
         if (isShouldSleep) {
@@ -27,8 +27,18 @@ class ManualSleepTimerImpl extends SleepTimer {
       }
     }
   }
-  override def sleepWithInterruptedException = {}
-  override def reset = {}
+
+  override def sleep = try {
+    sleepWithInterruptedException
+  }
+  catch {
+    case ie: InterruptedException => {}
+  }
+
+  override def reset = sync.synchronized {
+    setAutoActivate(false)
+    setShouldSleep(false)
+  }
 
   def setShouldSleep(shouldSleep: Boolean) = sync.synchronized {
     this.shouldSleep = shouldSleep
