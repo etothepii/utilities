@@ -274,13 +274,13 @@ class DefaultRepeatingPriorityQueueImplSpec extends FunSuite with Matchers {
 
   test("Pulling unique items should not mess up ordering") {
     val queue = new DefaultRepeatingPriorityQueueImpl[String]
-    queue add ("a", 2)
-    queue add ("b", 20)
-    (queue next (2, _ => true)) should contain allOf ("a", "b")
-    (queue next (9, _ => true)) should contain only "a"
-    (queue next (2, _ => true)) should contain allOf ("a", "b")
-    (queue uniqueNext (2, _ => true)) should contain allOf ("a", "b")
-    (queue next (9, _ => true)) should contain only "a"
-    (queue next (2, _ => true)) should contain allOf ("a", "b")
+    queue add("a", 2)
+    queue add("b", 20)
+    (queue next(2, _ => true)) should contain allOf("a", "b")
+    (queue next(9, _ => true)) should contain only "a"
+    (queue next(2, _ => true)) should contain allOf("a", "b")
+    (queue uniqueNext(2, _ => true)) should contain allOf("a", "b")
+    (queue next(9, _ => true)) should contain only "a"
+    (queue next(2, _ => true)) should contain allOf("a", "b")
   }
 }
