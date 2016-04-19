@@ -9,8 +9,10 @@ trait RepeatingPriorityQueue[T] {
   def addAll(seq: Seq[T], priority: Int)
   def next() : T
   def next(items: Int) : Seq[T]
+  def uniqueNext(items: Int) : Seq[T]
   def next(leave: T => Boolean) : T
   def next(items: Int, leave: T => Boolean) : Seq[T]
+  def uniqueNext(items: Int, leave: T => Boolean) : Seq[T]
   def size(): Int
   def remove(t: T)
 

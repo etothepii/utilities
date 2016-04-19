@@ -23,6 +23,8 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
     }
   }
 
+  private def addNext(queueItem: RepeatingPriorityQueueItem[T]) = add(queueItem.item, queueItem.increment, queueItem.nextScore)
+
   def add(item: T, increment: Int, score: Long) = {
     val oldItem = map remove item
     val newScore = if (oldItem.isDefined) {
@@ -51,24 +53,43 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
     }
   }
 
-  override def next(leave: (T) => Boolean): T = {
-    var queueItem = queue.dequeue
-    while (!queueItem.active) {
+  private def internalNext = {
+    var queueItem: RepeatingPriorityQueueItem[T] = null
+    while ((queueItem == null || !queueItem.active) && !queue.isEmpty) {
       queueItem = queue.dequeue
     }
-    map remove queueItem.item
-    if (leave(queueItem.item)) {
-      add(queueItem.item, queueItem.increment, queueItem.nextScore)
+    if (queueItem != null && queueItem.active) {
+      map remove queueItem.item
+      queueItem
+    }
+    else {
+      null
+    }
+  }
+
+  private def internalNext(leave: (T) => Boolean): RepeatingPriorityQueueItem[T] = {
+    val queueItem = internalNext
+    if (queueItem != null && leave(queueItem.item)) {
+      addNext(queueItem)
+    }
+    queueItem
+  }
+
+  def next(leave: T => Boolean): T = {
+    val queueItem = internalNext(leave)
+    if (queueItem == null) {
+      throw new EmptyRepeatingPriorityQueueException
     }
     queueItem.item
   }
 
   override def next(items: Int, leave: (T) => Boolean): Seq[T] = {
-    var index = 0
     val listBuffer = ListBuffer.empty[T]
-    while (index < items && !queue.isEmpty) {
-      index = index + 1
-      listBuffer += next(leave)
+    while (listBuffer.size < items && !queue.isEmpty) {
+      val queueItem = internalNext(leave)
+      if (queueItem != null) {
+        listBuffer += queueItem.item
+      }
     }
     listBuffer
   }
@@ -82,5 +103,20 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
     if (item.isDefined) {
       item.get.active = false
     }
+  }
+
+  override def uniqueNext(items: Int): Seq[T] = uniqueNext(items, _ => false)
+
+  override def uniqueNext(items: Int, leave: (T) => Boolean): Seq[T] = {
+    val listBuffer = ListBuffer.empty[RepeatingPriorityQueueItem[T]]
+    while (listBuffer.size < items && !queue.isEmpty) {
+      listBuffer += internalNext
+    }
+    for (queueItem <- listBuffer) {
+      if (leave(queueItem.item)) {
+        add(queueItem.item, queueItem.increment, queueItem.nextScore)
+      }
+    }
+    listBuffer.map(_.item)
   }
 }

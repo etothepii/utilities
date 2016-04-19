@@ -1,6 +1,6 @@
 package me.jamesphiliprobinson.utilities.time
 
-import org.scalatest.{Matchers, FunSuite}
+import org.scalatest.{FunSuite, Matchers}
 
 /**
   * Created by James Robinson on 03/04/2016.

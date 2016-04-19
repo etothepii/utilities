@@ -215,4 +215,60 @@ class DefaultRepeatingPriorityQueueImplSpec extends FunSuite with Matchers {
     queue next(2, _ => true) should contain inOrderOnly("b", "a")
     queue next(2, _ => true) should contain inOrderOnly("b", "a")
   }
+
+  test("If empty should return empty rather than error") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    (queue next 5).size shouldBe 0
+  }
+
+  test("Should be possible to request no duplicates when using next") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add("a", 2)
+    queue add("b", 3)
+    queue add("c", 4)
+    queue add("d", 5)
+    queue add("e", 6)
+    queue uniqueNext(5, _ => true) should contain allOf("a", "b", "c", "d", "e")
+    queue uniqueNext(5, _ => true) should contain allOf("a", "b", "c", "d", "e")
+    queue uniqueNext(5, _ => true) should contain allOf("a", "b", "c", "d", "e")
+    queue uniqueNext(5, _ => true) should contain allOf("a", "b", "c", "d", "e")
+    queue uniqueNext(5, _ => true) should contain allOf("a", "b", "c", "d", "e")
+    queue uniqueNext(5, _ => true) should contain allOf("a", "b", "c", "d", "e")
+  }
+
+  test("Queue with removed items should behave the same as an empty queue") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add("a", 2)
+    queue remove "a"
+    (queue next 5).size shouldBe 0
+  }
+
+  test("Must still return with maximum number of items if not enough items") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add("a", 2)
+    val result = queue next 5
+    result.size shouldBe 1
+    result(0) shouldBe "a"
+  }
+
+  test("Must still return with maximum number of unique items if not enough items") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    queue add("a", 2)
+    var result = queue uniqueNext(5, _ => true)
+    result.size shouldBe 1
+    result(0) shouldBe "a"
+    result = queue uniqueNext(5, _ => true)
+    result.size shouldBe 1
+    result(0) shouldBe "a"
+    result = queue uniqueNext(5, _ => true)
+    result.size shouldBe 1
+    result(0) shouldBe "a"
+  }
+
+  test("Should throw emoty queue exception is next called when empty") {
+    val queue = new DefaultRepeatingPriorityQueueImpl[String]
+    intercept[EmptyRepeatingPriorityQueueException] {
+      queue.next
+    }
+  }
 }
