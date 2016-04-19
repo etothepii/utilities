@@ -109,13 +109,14 @@ class DefaultRepeatingPriorityQueueImpl[T] extends RepeatingPriorityQueue[T] {
 
   override def uniqueNext(items: Int, leave: (T) => Boolean): Seq[T] = {
     val listBuffer = ListBuffer.empty[RepeatingPriorityQueueItem[T]]
+    var lastScore = 0L
     while (listBuffer.size < items && !queue.isEmpty) {
-      listBuffer += internalNext
+      val queueItem = internalNext
+      listBuffer += queueItem
+      lastScore = queueItem.score
     }
-    for (queueItem <- listBuffer) {
-      if (leave(queueItem.item)) {
-        add(queueItem.item, queueItem.increment, queueItem.nextScore)
-      }
+    for (queueItem <- listBuffer.filter(x => leave(x.item))) {
+      add(queueItem.item, queueItem.increment, queueItem.increment + lastScore)
     }
     listBuffer.map(_.item)
   }
