@@ -1,7 +1,7 @@
 package me.jamesphiliprobinson.utilities.implicits
 
-import org.scalatest.{BeforeAndAfter, FunSuite, Matchers}
 import me.jamesphiliprobinson.utilities.implicits.ThreadingConversions._
+import org.scalatest.{BeforeAndAfter, FunSuite, Matchers}
 
 /**
   * Created by James Robinson on 22/04/2016.
