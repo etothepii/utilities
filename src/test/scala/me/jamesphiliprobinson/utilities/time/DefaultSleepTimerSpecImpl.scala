@@ -92,4 +92,19 @@ class DefaultSleepTimerSpecImpl extends FunSuite with Matchers {
     }
   }
 
+  test("Can stay asleep for a little longer if reset part way through") {
+    val timer = new DefaultSleepTimerImpl(100, 50)
+    val time = System.currentTimeMillis
+    new Thread(new Runnable {
+      override def run = {
+        Thread sleep 50
+        timer.reset
+      }
+    }).start
+    timer.sleep
+    val timePassed = System.currentTimeMillis - time
+    timePassed should be >= 150L
+    timePassed should be < 160L
+  }
+
 }
