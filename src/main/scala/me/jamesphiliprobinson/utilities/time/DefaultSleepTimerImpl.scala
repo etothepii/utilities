@@ -6,6 +6,7 @@ package me.jamesphiliprobinson.utilities.time
 class DefaultSleepTimerImpl(var sleepLength: Long, var minimumSleepLength: Long) extends SleepTimer {
 
   var time = System.currentTimeMillis
+  private val sync = new Object
 
   override def sleep = {
     try {
@@ -16,13 +17,18 @@ class DefaultSleepTimerImpl(var sleepLength: Long, var minimumSleepLength: Long)
     }
   }
 
-  override def reset = {
+  override def reset = sync.synchronized {
     time = System.currentTimeMillis
   }
 
   override def sleepWithInterruptedException = {
-    val sleepFor = time + sleepLength - System.currentTimeMillis
-    Thread sleep Math.max(minimumSleepLength, sleepFor)
+    var sleepFor: Long = minimumSleepLength
+    while (sleepFor > 0) {
+      Thread sleep sleepFor
+      sync.synchronized {
+        sleepFor = time + sleepLength - System.currentTimeMillis
+      }
+    }
     reset
   }
 }
