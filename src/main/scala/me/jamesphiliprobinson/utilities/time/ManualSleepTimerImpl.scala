@@ -5,8 +5,8 @@ package me.jamesphiliprobinson.utilities.time
   */
 class ManualSleepTimerImpl extends SleepTimer {
   private val sync = new Object
-  private var shouldSleep = false
-  private var autoActivate = false
+  private var shouldSleep = true
+  private var autoActivate = true
 
   override def sleepWithInterruptedException = {
     if (isShouldSleep) {
@@ -36,8 +36,7 @@ class ManualSleepTimerImpl extends SleepTimer {
   }
 
   override def reset = sync.synchronized {
-    setAutoActivate(false)
-    setShouldSleep(false)
+    setShouldSleep(true)
   }
 
   def setShouldSleep(shouldSleep: Boolean) = sync.synchronized {

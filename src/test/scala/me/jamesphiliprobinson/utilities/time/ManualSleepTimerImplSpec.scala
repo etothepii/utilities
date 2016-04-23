@@ -9,6 +9,7 @@ class ManualSleepTimerImplSpec extends FunSuite with Matchers {
 
   test("Simple sleep timer does not hang when not enabled") {
     val sleepTimer = new ManualSleepTimerImpl
+    sleepTimer setShouldSleep false
     val startTime = System.currentTimeMillis
     sleepTimer.sleep
     val time = System.currentTimeMillis - startTime
@@ -85,6 +86,7 @@ class ManualSleepTimerImplSpec extends FunSuite with Matchers {
 
   test("Should auto restart timer if told to do so even if not currently set") {
     val sleepTimer = new ManualSleepTimerImpl
+    sleepTimer setShouldSleep false
     sleepTimer setAutoActivate true
     sleepTimer.sleep
     val startTime = System.currentTimeMillis
@@ -104,7 +106,6 @@ class ManualSleepTimerImplSpec extends FunSuite with Matchers {
     val sleepTimer = new ManualSleepTimerImpl
     val thread = Thread.currentThread
     sleepTimer setAutoActivate true
-    sleepTimer.sleep
     val startTime = System.currentTimeMillis
     new Thread(new Runnable {
       override def run() = {
@@ -122,7 +123,6 @@ class ManualSleepTimerImplSpec extends FunSuite with Matchers {
     val sleepTimer = new ManualSleepTimerImpl
     val thread = Thread.currentThread
     sleepTimer setAutoActivate true
-    sleepTimer.sleep
     new Thread(new Runnable {
       override def run() = {
         Thread sleep 10L
@@ -134,89 +134,23 @@ class ManualSleepTimerImplSpec extends FunSuite with Matchers {
     }
   }
 
-  test("Reset should clear sleeping and auto restart") {
+  test("Reset should enable sleep") {
     val sleepTimer = new ManualSleepTimerImpl
-    sleepTimer setAutoActivate true
-    sleepTimer setShouldSleep true
+    sleepTimer setShouldSleep false
     sleepTimer.reset
-    val startTime = System.currentTimeMillis
-    sleepTimer.sleep
-    val time = System.currentTimeMillis - startTime
-    time should be <= 2L
-    sleepTimer.isAutoActivate shouldBe false
-    sleepTimer.isShouldSleep shouldBe false
-  }
-
-  test("Reset should clear sleeping and auto restart 1") {
-    val sleepTimer = new ManualSleepTimerImpl
-    sleepTimer setShouldSleep true
-    sleepTimer.reset
-    val startTime = System.currentTimeMillis
-    sleepTimer.sleep
-    val time = System.currentTimeMillis - startTime
-    time should be <= 2L
-    sleepTimer.isAutoActivate shouldBe false
-    sleepTimer.isShouldSleep shouldBe false
-  }
-
-  test("Reset should clear sleeping and auto restart 2") {
-    val sleepTimer = new ManualSleepTimerImpl
-    sleepTimer setAutoActivate true
-    sleepTimer.reset
-    val startTime = System.currentTimeMillis
-    sleepTimer.sleep
-    val time = System.currentTimeMillis - startTime
-    time should be <= 2L
-    sleepTimer.isAutoActivate shouldBe false
-    sleepTimer.isShouldSleep shouldBe false
-  }
-
-  test("Reset should clear sleeping and auto restart 3") {
-    val sleepTimer = new ManualSleepTimerImpl
-    sleepTimer.reset
-    val startTime = System.currentTimeMillis
-    sleepTimer.sleep
-    val time = System.currentTimeMillis - startTime
-    time should be <= 2L
-    sleepTimer.isAutoActivate shouldBe false
-    sleepTimer.isShouldSleep shouldBe false
-  }
-
-  test("Reset should clear sleeping and auto restart of sleeping thread") {
-    val sleepTimer = new ManualSleepTimerImpl
-    sleepTimer setShouldSleep true
     val startTime = System.currentTimeMillis
     new Thread(new Runnable {
       override def run() = {
         Thread sleep 100L
-        sleepTimer reset
+        sleepTimer setShouldSleep false
       }
     }).start
     sleepTimer.sleep
     val time = System.currentTimeMillis - startTime
+    time should be < 110L
     time should be >= 100L
-    time should be <= 120L
-    sleepTimer.isAutoActivate shouldBe false
-    sleepTimer.isShouldSleep shouldBe false
-  }
-
-  test("Reset should clear sleeping and auto restart of sleeping thread 2") {
-    val sleepTimer = new ManualSleepTimerImpl
-    sleepTimer setShouldSleep true
-    sleepTimer setAutoActivate true
-    val startTime = System.currentTimeMillis
-    new Thread(new Runnable {
-      override def run() = {
-        Thread sleep 100L
-        sleepTimer reset
-      }
-    }).start
-    sleepTimer.sleep
-    val time = System.currentTimeMillis - startTime
-    time should be >= 100L
-    time should be <= 120L
-    sleepTimer.isAutoActivate shouldBe false
-    sleepTimer.isShouldSleep shouldBe false
+    sleepTimer.isAutoActivate shouldBe true
+    sleepTimer.isShouldSleep shouldBe true
   }
 
 }
