@@ -3,10 +3,8 @@ package me.jamesphiliprobinson.utilities.time
 /**
   * Created by James Robinson on 04/04/2016.
   */
-class ManualSleepTimerImpl extends SleepTimer {
+class ManualSleepTimerImpl(var shouldSleep: Boolean = true, var autoActivate: Boolean = true) extends SleepTimer {
   private val sync = new Object
-  private var shouldSleep = true
-  private var autoActivate = true
 
   override def sleepWithInterruptedException = {
     if (isShouldSleep) {
